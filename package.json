@@ -1,0 +1,19 @@
+{
+  "name": "mcp-mongo-sdlc-governance",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for MongoDB SDLC governance workflows.",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "mongodb": "^6.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
