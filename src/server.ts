@@ -1,7 +1,9 @@
+import "dotenv/config";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { MongoClient } from "mongodb";
 import { z } from "zod";
+
 
 type ProjectDocument = {
   project_id: string;
@@ -74,7 +76,8 @@ server.tool(
       action: z.enum(["update_docs", "revert_status"]),
     }),
   },
-  async ({ project_id, action }) => {
+  async (request) => {
+    const { project_id, action } = request.params as { project_id: string; action: string };
     if (action === "revert_status") {
       const result = await getProjectsCollection().updateOne(
         { project_id },
