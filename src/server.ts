@@ -52,12 +52,16 @@ server.registerTool(
   'create_jira_ticket',
   {
     description: 'Create a Jira ticket to track governance remediation.',
+    // Define the input schema as a Zod raw shape. The MCP SDK expects
+    // either a raw shape (object with Zod validators) or an AnySchema, not
+    // a ZodObject instance. Using a plain object here satisfies the
+    // ZodRawShapeCompat type expected by the SDK.
     inputSchema: {
       project_id: z.string().min(1),
       issue_description: z.string().min(1),
     },
   },
-  async ({ project_id, issue_description }) => {
+  async ({ project_id, issue_description }: { project_id: string; issue_description: string }) => {
     const baseUrl = process.env.JIRA_BASE_URL;
     const email = process.env.JIRA_EMAIL;
     const token = process.env.JIRA_API_TOKEN;
@@ -148,6 +152,7 @@ server.registerTool(
   {
     description:
       'Detect PII violations by finding users in sample_mflix.users that have an email field.',
+    // No input parameters for this tool; provide an empty raw shape
     inputSchema: {},
   },
   async () => {
@@ -166,7 +171,7 @@ server.registerTool(
         ],
       };
     }
-    const flagged = usersWithEmail.map((doc) => `• ${doc._id}`).join('\n');
+    const flagged = usersWithEmail.map((doc: any) => `• ${doc._id}`).join('\n');
     return {
       content: [
         {
@@ -187,6 +192,7 @@ server.registerTool(
   {
     description:
       'Detect zombie Airbnb listings (last_scraped older than 2019-01-01).',
+    // This tool takes no input; provide an empty raw shape
     inputSchema: {},
   },
   async () => {
@@ -207,7 +213,7 @@ server.registerTool(
       };
     }
     const flagged = zombies
-      .map((doc) =>
+      .map((doc: any) =>
         `• ${doc._id}${
           doc.last_scraped
             ? ` (last_scraped: ${doc.last_scraped.toISOString().split('T')[0]})`
@@ -235,6 +241,7 @@ server.registerTool(
   {
     description:
       'Detect movies from year > 2015 in sample_mflix.movies with zero viewer reviews.',
+    // No inputs required for this tool
     inputSchema: {},
   },
   async () => {
@@ -254,7 +261,7 @@ server.registerTool(
       };
     }
     const flagged = movies
-      .map((doc) => `• ${doc.title ?? doc._id}`)
+      .map((doc: any) => `• ${doc.title ?? doc._id}`)
       .join('\n');
     return {
       content: [
@@ -275,6 +282,7 @@ server.registerTool(
   {
     description:
       'Detect performance bottlenecks by counting documents in sample_weatherdata.data.',
+    // No inputs for this tool
     inputSchema: {},
   },
   async () => {
@@ -311,6 +319,7 @@ server.registerTool(
   {
     description:
       "Detect legacy configuration entries in sample_supplies.sales where storeLocation is 'Denver'.",
+    // No inputs required
     inputSchema: {},
   },
   async () => {
@@ -329,7 +338,7 @@ server.registerTool(
         ],
       };
     }
-    const flagged = legacySales.map((doc) => `• ${doc._id}`).join('\n');
+    const flagged = legacySales.map((doc: any) => `• ${doc._id}`).join('\n');
     return {
       content: [
         {
@@ -350,6 +359,7 @@ server.registerTool(
   {
     description:
       'Audit for orphaned customer accounts in sample_analytics.customers where the accounts array is empty.',
+    // No inputs required for this tool
     inputSchema: {},
   },
   async () => {
@@ -366,7 +376,7 @@ server.registerTool(
       };
     }
     const flagged = orphaned
-      .map((doc) => `• ${doc.name ?? doc._id}`)
+      .map((doc: any) => `• ${doc.name ?? doc._id}`)
       .join('\n');
     return {
       content: [
